@@ -36,7 +36,7 @@ __global__ void gpu_simple_kernel(float* a, float* b, float* c, int N)
 	if ( idx > N)
 		return;
 
-// #define PRINT_IDS
+#define PRINT_IDS
 #if !defined( __CUDA_ARCH__) || (__CUDA_ARCH__ >= 200 ) &&  defined(PRINT_IDS)
 	// Check nvcc compiler gencode 
 	// at least -gencode=arch=compute_20,code=\"sm_20,compute_20\" should be set
@@ -48,7 +48,7 @@ __global__ void gpu_simple_kernel(float* a, float* b, float* c, int N)
 
 void launch_gpu_simple_kernel(float* a, float* b, float* c, int N)
 {
-	const int threadsPerBlock = 32;
+	const int threadsPerBlock = 64;
 	const int numberOfBlocks = getGridSize(N, threadsPerBlock);
 	gpu_simple_kernel<<< numberOfBlocks, threadsPerBlock>>>(a, b, c, N);
 	cudaThreadSynchronize();

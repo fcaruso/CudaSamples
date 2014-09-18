@@ -63,9 +63,9 @@ __global__ void kAdd(REAL* c, REAL* a, REAL* b, int N)
 {
 	int idx = blockIdx.x*BLOCK_SIZE + threadIdx.x ;
 	
-	// try to use assert instead, and check the effect on the kernel output...
-	/*if ( idx > N )
-		return;*/
+	// uncomment to show the behaviour of assert...
+	//if ( idx >= N )
+	//	return;
 
 	/*
 	void assert(int expression);
