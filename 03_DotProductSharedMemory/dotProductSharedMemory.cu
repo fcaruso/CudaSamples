@@ -10,7 +10,7 @@
 #include <cuda_runtime.h>
 
 
-const unsigned ARRAY_DIMENSION = 33*1024;
+const unsigned ARRAY_DIMENSION = 2000*1024;
 const int THREADS_PER_BLOCK = 128;
 
 //float arrays
