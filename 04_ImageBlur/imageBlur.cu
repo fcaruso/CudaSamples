@@ -21,104 +21,13 @@ unsigned char *d_img  = NULL;
 template<unsigned short RADIUS >
 __global__ void kRadialBlur( unsigned char* img, unsigned width, unsigned height, size_t pitch)
 {
-	__shared__ unsigned char sh[BLOCK_WIDTH + 2*RADIUS][BLOCK_HEIGHT + 2*RADIUS];
 
-	int g_x = blockDim.x*blockIdx.x + threadIdx.x;
-	int g_y = blockDim.y*blockIdx.y + threadIdx.y;
-
-	int pid_x = threadIdx.x + RADIUS;
-	int pid_y = threadIdx.y + RADIUS;
-	
-	///////////////////////
-	// gather shared memory
-	///////////////////////
-	sh[pid_y][pid_x] = img[ g_y*pitch + g_x];
-
-	// halo 
-	if ( ( threadIdx.x < RADIUS ) && ( g_x  >= RADIUS ) )
-	{
-		sh[pid_y][pid_x - RADIUS] = img[ g_y*pitch + g_x - RADIUS];
-
-		if ( ( threadIdx.y < RADIUS ) && ( g_y >= RADIUS ) )
-		{
-			sh[pid_y - RADIUS][pid_x - RADIUS] = img[ (g_y - RADIUS)*pitch + g_x - RADIUS];
-		}
-		if ( ( threadIdx.y > (BLOCK_HEIGHT -1 - RADIUS) ) )
-		{
-			sh[pid_y + RADIUS][pid_x - RADIUS] = img[ (g_y + RADIUS)*pitch + g_x - RADIUS];
-		}
-	}
-	if ( ( threadIdx.x > ( BLOCK_WIDTH -1 - RADIUS ) ) && ( g_x < ( width - RADIUS ) ) )
-	{
-		sh[pid_y][pid_x + RADIUS ] = img[ g_y*pitch + g_x + RADIUS];
-
-		if ( ( threadIdx.y < RADIUS ) && ( g_y > RADIUS ) )
-		{
-			sh[pid_y - RADIUS][pid_x + RADIUS] = img[ (g_y - RADIUS)*pitch + g_x + RADIUS];
-		}
-		if ( (threadIdx.y > (BLOCK_HEIGHT -1 - RADIUS ) ) && ( g_y < ( height - RADIUS ) ) )
-		{
-			sh[pid_y + RADIUS][pid_x + RADIUS] = img[ (g_y + RADIUS)*pitch + g_x + RADIUS];
-		}
-	}
-
-	if ( ( threadIdx.y < RADIUS ) && ( g_y >= RADIUS ) )
-	{
-		sh[pid_y - RADIUS][pid_x] = img[ (g_y - RADIUS)*pitch + g_x];
-	}
-	if ( ( threadIdx.y > ( BLOCK_HEIGHT -1 - RADIUS ) ) && ( g_y < ( height - RADIUS ) ) )
-	{
-		sh[pid_y + RADIUS][pid_x] = img[ ( g_y + RADIUS)*pitch + g_x ];
-	}
-
-	__syncthreads();
-
-	//////////////////////
-	// compute the blurred value
-	//////////////////////
-
-	unsigned val = 0;
-	unsigned k = 0;
-	for (int i=-RADIUS; i<= RADIUS; i++ )
-		for ( int j=-RADIUS; j<=RADIUS ; j++ )
-		{
-			if ( ( ( g_x + j ) < 0 ) || ( ( g_x + j ) > ( width - 1) ) )
-				continue;
-			if ( ( ( g_y + i ) < 0 ) || ( ( g_y + i ) > ( height - 1) ) )
-				continue;
-			val += sh[pid_y + i][pid_x + j];
-			k++;
-		}
-
-	val /= k;
-
-	////////////////////
-	// write into global memory
-	///////////////
-
-	img[ g_y*pitch + g_x ] = (unsigned char) val;
 			
 }
 
 __global__ void kBlur(unsigned char* img, unsigned width, unsigned height, size_t pitch)
 {
-	__shared__ unsigned char sh[BLOCK_WIDTH][BLOCK_HEIGHT];
 
-	int tid_x = blockDim.x*blockIdx.x + threadIdx.x;
-	int tid_y = blockDim.y*blockIdx.y + threadIdx.y;
-
-	sh[threadIdx.x][threadIdx.y] = img[ tid_y*pitch + tid_x ];
-	
-	__syncthreads();
-
-	unsigned int val = 0;
-	for (int i=0; i< blockDim.y; i++ )
-		for ( int j=0; j < blockDim.x; j++ )
-			val += sh[i][j];
-
-	val /= blockDim.x*blockDim.y;
-
-	img[ tid_y*pitch + tid_x ] = (unsigned char) val;
 
 }
 
