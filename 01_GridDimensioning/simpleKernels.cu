@@ -26,6 +26,11 @@ inline int getGridSize( int n_of_threads, int threads_per_block)
 	
 	// 2.
 	//return ( (n_of_threads + threads_per_block - 1)/threads_per_block );
+
+	// 3.
+	//return ((n_of_threads % threads_per_block) != 0) 
+	//				? (n_of_threads / threads_per_block + 1) 
+	//				: (n_of_threads / threads_per_block );
 }
 
 __global__ void gpu_simple_kernel(float* a, float* b, float* c, int N)
