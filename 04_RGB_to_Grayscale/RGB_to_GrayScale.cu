@@ -10,7 +10,7 @@
 
 #include <cuda_profiler_api.h>
 
-char *image_filename = "C:/ProgramData/NVIDIA Corporation/CUDA Samples/v6.5/common/data/lena.pgm";
+char *image_filename = "....";
 unsigned int width, height;
 unsigned char *h_img  = NULL;
 unsigned char *d_img  = NULL;
@@ -18,14 +18,7 @@ unsigned char *d_img  = NULL;
 #define BLOCK_WIDTH		32
 #define BLOCK_HEIGHT	32
 
-template<unsigned short RADIUS >
-__global__ void kRadialBlur( ... )
-{
-
-			
-}
-
-__global__ void kBlur( ... )
+__global__ void kRGBtoGrayscale( ... )
 {
 
 
@@ -47,12 +40,11 @@ int main(int argc, char* argv[])
 	// process image
 	dim3 dGrid( ... );
 	dim3 dBlock( ... );
-	kBlur<<<....>>> ( .... )
-	kRadialBlur<4> <<< .... >>> ( .... );
+	kRGBtoGrayScale <<< .... >>> ( .... );
 	cudaThreadSynchronize();
 	// save image
 	cudaMemcpy2D( .... );
-	sdkSavePGM("blurred.ppm", h_img, width, height );
+	sdkSavePGM("grayscale.ppm", h_img, width, height );
 
 	// free memory
 	cudaFree( d_img );
